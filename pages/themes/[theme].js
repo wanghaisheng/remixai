@@ -3,7 +3,7 @@ import ThemeInfo from "@/components/ThemeInfo";
 import ThemePreview from "@/components/ThemePreview";
 import sponsor from "@/config/sponsor.json";
 import authors from "@/json/authors.json";
-import themes from "@/json/themes.json";
+import themes from "@/json/artifacts.json";
 import Base from "@/layouts/Baseof";
 import MobileSidebar from "@/layouts/partials/MobileSidebar";
 import { markdownify, plainify } from "@/lib/utils/textConverter";
