@@ -1,6 +1,6 @@
 import blogs from "@/json/blog.json";
 import themeTools from "@/json/theme-tools.json";
-import themes from "@/json/themes.json";
+import themes from "@/json/artifacts.json";
 import tools from "@/json/tools.json";
 import { createContext, useContext, useState } from "react";
 
