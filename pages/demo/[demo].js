@@ -69,7 +69,7 @@ export default Demo;
 export const getServerSideProps = async ({ params }) => {
   const { demo } = params;
 
-  const singleTheme = await getSinglePageServer("content/themes", demo);
+  const singleTheme = await getSinglePageServer("content/artifacts", demo);
 
   // handle 404
   if (!singleTheme) {

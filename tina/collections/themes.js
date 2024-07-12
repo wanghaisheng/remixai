@@ -1,7 +1,7 @@
 const themes = {
-  label: "Themes",
+  label: "artifacts",
   name: "themes",
-  path: "content/themes",
+  path: "content/artifacts",
   format: "md",
   match: {
     include: "**/*",

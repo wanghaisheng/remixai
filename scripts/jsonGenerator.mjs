@@ -33,13 +33,13 @@ const getSinglePageData = (folder, includeDrafts) => {
 
 // get themes name
 const getThemesName = () => {
-  const getAllData = getSinglePageData("content/themes", false);
+  const getAllData = getSinglePageData("content/artifacts", false);
   return getAllData.map((item) => item.slug);
 };
 
 // get custom data
 const getThemesGithub = () => {
-  const getAllData = getSinglePageData("content/themes", false);
+  const getAllData = getSinglePageData("content/artifacts", false);
   return getAllData
     .map((item) => (item.frontmatter.github ? item.frontmatter.github : ""))
     .filter((item) => item !== "");
@@ -47,7 +47,7 @@ const getThemesGithub = () => {
 
 // get custom data
 const getCustomData = () => {
-  const getAllData = getSinglePageData("content/themes", false);
+  const getAllData = getSinglePageData("content/artifacts", false);
   const customData = getAllData.map((item) => item.frontmatter.author);
   // unique authors
   const uniqueAuthors = [...new Set(customData)];
@@ -55,7 +55,7 @@ const getCustomData = () => {
 };
 
 // get all data
-const themes = getSinglePageData("content/themes", false);
+const themes = getSinglePageData("content/artifacts", false);
 const tools = getSinglePageData("content/tools", false);
 const examples = getSinglePageData("content/examples", false);
 const authors = getSinglePageData("content/authors", false);
@@ -72,7 +72,7 @@ try {
     fs.mkdirSync(jsonDir);
   }
   // json data
-  fs.writeFileSync(`${jsonDir}/themes.json`, JSON.stringify(themes));
+  fs.writeFileSync(`${jsonDir}/artifacts.json`, JSON.stringify(themes));
   fs.writeFileSync(`${jsonDir}/tools.json`, JSON.stringify(tools));
   fs.writeFileSync(`${jsonDir}/examples.json`, JSON.stringify(examples));
   fs.writeFileSync(`${jsonDir}/authors.json`, JSON.stringify(authors));
@@ -93,7 +93,7 @@ try {
   );
 
   // public data
-  fs.writeFileSync(`public/data/themes.json`, JSON.stringify(themes));
+  fs.writeFileSync(`public/data/artifacts.json`, JSON.stringify(themes));
   fs.writeFileSync(`public/data/tools.json`, JSON.stringify(tools));
   fs.writeFileSync(`public/data/examples.json`, JSON.stringify(examples));
 } catch (err) {

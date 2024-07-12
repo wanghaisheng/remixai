@@ -10,9 +10,9 @@ import yamlFront from "yaml-front-matter";
 
 dotenv.config();
 
-const getThemes = JSON.parse(readFileSync(".json/themes.json"));
+const getThemes = JSON.parse(readFileSync(".json/artifacts.json"));
 const spinner = ora("Loading");
-const themesFolder = path.join(process.cwd(), "/content/themes");
+const themesFolder = path.join(process.cwd(), "/content/artifacts");
 const crawlerLogPath = "./crawler-log.json";
 const token = process.env.GITHUB_TOKEN;
 

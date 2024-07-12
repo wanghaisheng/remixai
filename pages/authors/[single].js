@@ -116,7 +116,7 @@ export const getStaticPaths = () => {
 export const getStaticProps = async ({ params }) => {
   const { single } = params;
   const authors = getSinglePage("content/authors");
-  const themes = getSinglePage("content/themes");
+  const themes = getSinglePage("content/artifacts");
   const author = authors.filter((author) => author.slug === single);
   const mdxContent = await parseMDX(author[0].content);
 
