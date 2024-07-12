@@ -29,9 +29,9 @@ Submit a tool for Jamstack sites by adding a markdown file to the `content/tools
 
 ### Submit a Jamstack Example Site
 
-Submit a Jamstack example website by adding a markdown file to the `content/examples` folder.
+Submit a Jamstack example website by adding a markdown file to the `content/videos` folder.
 
-1. Fork this repo and copy the `_template.md` file in `content/examples` folder. Another option is to add a new file using the [Github UI](https://github.com/statichunt/statichunt/tree/main/content/examples) _(click the "add file" button)_
+1. Fork this repo and copy the `_template.md` file in `content/videos` folder. Another option is to add a new file using the [Github UI](https://github.com/statichunt/statichunt/tree/main/content/videos) _(click the "add file" button)_
 2. Rename it to the site name (ex: `statichunt.md`) and fulfill the file with sites info.
 3. Submit a pull request.
 
