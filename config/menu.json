@@ -4,18 +4,10 @@
       "name": "Artifacts",
       "url": "/"
     },
+
     {
-      "name": "Tools",
-      "url": "/tools"
-    },
-    {
-      "name": "Examples",
+      "name": "Videos",
       "url": "/examples"
-    },
-    {
-      "name": "Bundles",
-      "url": "/bundles",
-      "badge": "offer"
     },
     {
       "name": "Blog",
@@ -89,11 +81,11 @@
       "name": "Tools",
       "pages": [
         {
-          "page": "Chat",
+          "page": "html2md",
           "url": "/jamstack-chat"
         },
         {
-          "page": "E-commerce",
+          "page": "shortlink",
           "url": "/jamstack-ecommerce"
         },
         {

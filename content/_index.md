@@ -1,7 +1,7 @@
 ---
 intro:
-  title_start: Jamstack
-  title_loop: ["Themes", "Tools", "Examples"]
+  title_start: claude artifacts
+  title_loop: ["discover", "build", "share"]
   title_end: Library
-  description: Statichunt is the largest directory of **<themes>** themes, starters, UI kits, and tools for Static Site Generators. Find the perfect starting point for your next project and save hours. 
+  description: remixai is the largest directory of **<artifacts>** artifacts,tutorials, best practise and tools for remix claude artifacts journey. Find the perfect starting point for your daily life and save hours. 
 ---
