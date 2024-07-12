@@ -1,7 +1,7 @@
 import blogs from "@/json/blog.json";
 import themeTools from "@/json/theme-tools.json";
 import themes from "@/json/artifacts.json";
-import tools from "@/json/tools.json";
+import tools from "@/json/kol.json";
 import { createContext, useContext, useState } from "react";
 
 const AppSearchContext = createContext();
