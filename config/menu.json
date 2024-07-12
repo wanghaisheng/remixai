@@ -1,0 +1,126 @@
+{
+  "main": [
+    {
+      "name": "Themes",
+      "url": "/"
+    },
+    {
+      "name": "Tools",
+      "url": "/tools"
+    },
+    {
+      "name": "Examples",
+      "url": "/examples"
+    },
+    {
+      "name": "Bundles",
+      "url": "/bundles",
+      "badge": "offer"
+    },
+    {
+      "name": "Blog",
+      "url": "/blog" 
+    }
+  ],
+  "footer": [
+    {
+      "name": "Statichunt",
+      "pages": [
+        {
+          "page": "About",
+          "url": "/about"
+        },
+        {
+          "page": "Contact",
+          "url": "/contact"
+        },
+        {
+          "page": "Blog",
+          "url": "/blog"
+        },
+        {
+          "page": "Write for us",
+          "url": "/write-for-us"
+        },
+        {
+          "page": "Disclaimer",
+          "url": "/disclaimer"
+        }
+      ]
+    },
+    {
+      "name": "Themes",
+      "pages": [
+        {
+          "page": "Astro Themes",
+          "url": "/astro-themes"
+        },
+        {
+          "page": "Hugo Themes",
+          "url": "/hugo-themes"
+        },
+        {
+          "page": "Nextjs Templates",
+          "url": "/nextjs-templates"
+        },
+        {
+          "page": "Gatsby Themes",
+          "url": "/gatsby-themes"
+        },
+        {
+          "page": "Jekyll Themes",
+          "url": "/jekyll-themes"
+        },
+        {
+          "page": "Hexo Themes",
+          "url": "/hexo-themes"
+        },
+        {
+          "page": "Nuxtjs Themes",
+          "url": "/nuxtjs-themes"
+        },
+        {
+          "page": "Eleventy Themes",
+          "url": "/eleventy-themes"
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "pages": [
+        {
+          "page": "Chat",
+          "url": "/jamstack-chat"
+        },
+        {
+          "page": "E-commerce",
+          "url": "/jamstack-ecommerce"
+        },
+        {
+          "page": "CMS",
+          "url": "/jamstack-cms"
+        },
+        {
+          "page": "Feedback",
+          "url": "/jamstack-feedback"
+        },
+        {
+          "page": "form",
+          "url": "/jamstack-forms"
+        },
+        {
+          "page": "helper",
+          "url": "/jamstack-helper"
+        },
+        {
+          "page": "hosting",
+          "url": "/static-website-hosting"
+        },
+        {
+          "page": "search",
+          "url": "/jamstack-search"
+        }
+      ]
+    }
+  ]
+}

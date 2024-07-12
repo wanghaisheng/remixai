@@ -1,0 +1,36 @@
+{
+  "themes": [
+    {
+      "name": "Themefisher",
+      "image": "/sponsors/themefisher-card.png",
+      "link": "https://themefisher.com/",
+      "description": "Themefisher offers over 120 premium and free website templates built with modern technologies like Astro, NextJs, Hugo, Tailwind, and Bootstrap."
+    },
+    {
+      "name": "Gethugothemes",
+      "image": "/sponsors/gethugothemes-card.png",
+      "link": "https://gethugothemes.com/",
+      "description": "Largest premium Hugo themes provider. It has a collection of 58+ high-quality themes for users to choose from."
+    },
+    {
+      "name": "WrapPixel",
+      "image": "/sponsors/wrappixel-card.png",
+      "link": "https://www.wrappixel.com/templates/category/admin-dashboard-templates/?ref=317",
+      "description": "80+ premium and free admin dashboard templates built with modern technologies like React, Vue, Angular, and Bootstrap."
+    },
+    {
+      "name": "Sponsor Slot",
+      "image": "/sponsors/sponsor-card.png",
+      "link": "/contact",
+      "description": "Showcase your products in front of 6000+ users every month. Limited sponsorship slots available!"
+    }
+  ],
+  "theme_single": [
+    {
+      "author": "WrapPixel",
+      "image": "/sponsors/wrappixel-promotion.png",
+      "link": "https://www.wrappixel.com/templates/big-bundle/?ref=317"
+    }
+  ],
+  "tools": []
+}
