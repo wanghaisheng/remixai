@@ -7,7 +7,7 @@
 
     {
       "name": "Videos",
-      "url": "/examples"
+      "url": "/videos"
     },
     {
       "name": "Blog",
@@ -16,7 +16,7 @@
   ],
   "footer": [
     {
-      "name": "Statichunt",
+      "name": "Remixai",
       "pages": [
         {
           "page": "About",

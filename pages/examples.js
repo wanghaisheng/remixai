@@ -102,9 +102,9 @@ export default Home;
 
 // for example page data
 export const getStaticProps = async () => {
-  const examplePage = await getListPage("content/examples/_index.md");
+  const examplePage = await getListPage("content/videos/_index.md");
   const { frontmatter, content } = examplePage;
-  const examples = getSinglePage("content/examples");
+  const examples = getSinglePage("content/videos");
 
   return {
     props: {
