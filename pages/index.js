@@ -168,7 +168,7 @@ export const getStaticProps = async () => {
   const cms = getSinglePage("content/cms");
   const css = getSinglePage("content/css");
   const category = getSinglePage("content/category");
-  const themes = getSinglePage("content/themes");
+  const themes = getSinglePage("content/artifacts");
   const authors = getSinglePage("content/authors");
 
   return {
