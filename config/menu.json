@@ -10,6 +10,12 @@
       "url": "/videos"
     },
     {
+      "name": "KOLs",
+
+      "url": "/kol"
+
+    },
+    {
       "name": "Blog",
       "url": "/blog" 
     }
