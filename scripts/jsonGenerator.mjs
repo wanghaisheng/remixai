@@ -57,7 +57,7 @@ const getCustomData = () => {
 // get all data
 const themes = getSinglePageData("content/artifacts", false);
 const tools = getSinglePageData("content/tools", false);
-const examples = getSinglePageData("content/examples", false);
+const examples = getSinglePageData("content/videos", false);
 const authors = getSinglePageData("content/authors", false);
 const blog = getSinglePageData("content/blog", false);
 const ssg = getSinglePageData("content/ssg", true);
@@ -74,7 +74,7 @@ try {
   // json data
   fs.writeFileSync(`${jsonDir}/artifacts.json`, JSON.stringify(themes));
   fs.writeFileSync(`${jsonDir}/tools.json`, JSON.stringify(tools));
-  fs.writeFileSync(`${jsonDir}/examples.json`, JSON.stringify(examples));
+  fs.writeFileSync(`${jsonDir}/videos.json`, JSON.stringify(examples));
   fs.writeFileSync(`${jsonDir}/authors.json`, JSON.stringify(authors));
   fs.writeFileSync(`${jsonDir}/theme-tools.json`, JSON.stringify(themeTools));
   fs.writeFileSync(`${jsonDir}/blog.json`, JSON.stringify(blog));
@@ -95,7 +95,7 @@ try {
   // public data
   fs.writeFileSync(`public/data/artifacts.json`, JSON.stringify(themes));
   fs.writeFileSync(`public/data/tools.json`, JSON.stringify(tools));
-  fs.writeFileSync(`public/data/examples.json`, JSON.stringify(examples));
+  fs.writeFileSync(`public/data/videos.json`, JSON.stringify(examples));
 } catch (err) {
   console.error(err);
 }
