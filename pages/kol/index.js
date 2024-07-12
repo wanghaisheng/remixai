@@ -49,7 +49,7 @@ const ToolsList = ({ toolsCategory, tools, indexPage }) => {
 export const getStaticProps = async () => {
   const toolsIndex = await getListPage("content/tools/_index.md");
   const toolsCategory = getSinglePage("content/tools-category");
-  const tools = getSinglePage("content/tools");
+  const tools = getSinglePage("content/kol");
 
   return {
     props: {

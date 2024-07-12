@@ -1,6 +1,6 @@
 const tools = {
-  label: "Tools",
-  name: "tools",
+  label: "kols",
+  name: "kol",
   path: "content/kol",
   format: "md",
   match: {

@@ -1,8 +1,8 @@
 import { defineConfig } from "tinacms";
 import posts from "./collections/posts";
 import taxonomies from "./collections/taxonomies";
-import themes from "./collections/themes";
-import tools from "./collections/tools";
+import artifacts from "./collections/artifacts";
+import kol from "./collections/kol";
 import config from "./global/config";
 import menu from "./global/menu";
 
@@ -26,6 +26,6 @@ export default defineConfig({
     },
   },
   schema: {
-    collections: [posts, themes, tools, ...taxonomies, menu, config],
+    collections: [posts, artifacts, kol, ...taxonomies, menu, config],
   },
 });
