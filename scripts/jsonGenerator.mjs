@@ -74,3 +74,44 @@ try {
 } catch (err) {
   console.error(err);
 }
+
+
+// filter options
+
+// Dynamically generate themeTools if specific folders are found
+const generateThemeTools = (dynamicData) => {
+  const toolsFolders = ['ssg', 'css', 'cms', 'category'];
+  let themeToolsArray = [];
+
+  toolsFolders.forEach((tool) => {
+    if (dynamicData[tool]) {
+      themeToolsArray = [...themeToolsArray, ...dynamicData[tool]];
+    }
+  });
+
+  return themeToolsArray;
+};
+
+// Get all data using dynamic folder paths
+const contentFolders = getContentFolders();
+const dynamicData = {};
+let themeTools = []; // Initialize themeTools outside of the loop
+
+contentFolders.forEach((folder) => {
+  const folderPath = path.join("content", folder);
+  dynamicData[folder] = getSinglePageData(folderPath, false);
+
+  // Check for specific folder names to create themeTools
+  if (['ssg', 'css', 'cms', 'category'].includes(folder)) {
+    themeTools = generateThemeTools(dynamicData);
+  }
+});
+
+// Write JSON files dynamically based on folder names
+// ... (rest of the code)
+
+// Write themeTools after it's been compiled
+fs.writeFileSync(`${jsonDir}/theme-tools.json`, JSON.stringify(themeTools));
+fs.writeFileSync(`public/data/theme-tools.json`, JSON.stringify(themeTools));
+
+// ... (rest of the writing JSON files logic)
