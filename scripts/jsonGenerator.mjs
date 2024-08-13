@@ -2,35 +2,34 @@ import fs from "fs";
 import matter from "gray-matter";
 import path from "path";
 
-const contentDir = "./content"; // 内容目录
-const jsonDir = "./.json"; // JSON 输出目录
-const publicDir = "./public/data"; // 公共数据输出目录
+const contentDir = "./content";
+const jsonDir = "./.json";
+const publicDir = "./public/data";
 
-// 递归创建目录，如果目录不存在
+// 确保目录存在
 const ensureDir = (dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 };
 
-// 获取所有内容文件夹
-const getContentFolders = () => {
-  return fs.readdirSync(contentDir).filter((dir) => fs.statSync(path.join(contentDir, dir)).isDirectory());
+// 获取列表页面数据
+const getListPageData = (folderPath, filename) => {
+  const fileData = fs.readFileSync(path.join(folderPath, filename), "utf-8");
+  const { data, content } = matter(fileData);
+  const slug = filename.replace(".md", "");
+  return {
+    slug,
+    frontmatter: data,
+    content: content.trim(),
+  };
 };
 
 // 获取单页数据
 const getSinglePageData = (folderPath, includeDrafts = false) => {
   const files = fs.readdirSync(folderPath).filter((file) => file.endsWith(".md"));
-  return files.map((filename) => {
-    const fileData = fs.readFileSync(path.join(folderPath, filename), "utf-8");
-    const { data, content } = matter(fileData);
-    const slug = path.basename(filename, ".md");
-    return {
-      slug,
-      frontmatter: data,
-      content: content.trim(),
-    };
-  }).filter((page) => includeDrafts || !page.frontmatter.draft);
+  return files.map((filename) => getListPageData(folderPath, filename))
+    .filter((page) => includeDrafts || !page.frontmatter.draft);
 };
 
 // 写入JSON数据到文件
@@ -42,6 +41,7 @@ const writeJsonData = (data, dir, filename) => {
 
 // 主逻辑
 (async () => {
+  // 获取所有内容文件夹
   const folders = getContentFolders();
   const dynamicData = {};
 
@@ -50,6 +50,10 @@ const writeJsonData = (data, dir, filename) => {
     const folderPath = path.join(contentDir, folder);
     dynamicData[folder] = getSinglePageData(folderPath);
   }
+
+  // 特别处理 sponsors
+  const sponsorsData = getListPageData(path.join(contentDir, "sponsors"), "index.md");
+  dynamicData.sponsors = [sponsorsData];
 
   // 特别处理，创建theme-tools数组
   const toolsFolders = ['ssg', 'css', 'cms', 'category'];
