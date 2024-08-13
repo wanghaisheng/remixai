@@ -2,22 +2,50 @@ import fs from "fs";
 import matter from "gray-matter";
 import path from "path";
 
-const contentDir = "./content"; // 内容目录
-const jsonDir = "./.json"; // JSON 输出目录
-const publicDir = "./public/data"; // 公共数据输出目录
+// Configuration for folder paths and output directories
+const config = {
+  regularFolders: {
 
-// 递归创建目录，如果目录不存在
-const ensureDir = (dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+    artifacts: "content/artifacts",
+    kol: "content/kol",
+    videos: "content/videos",
+    authors: "content/authors",
+    blog: "content/blog",
+    // ... other regular folders  },
+  filterOptions: {
+    ssg: "content/ssg",
+    css: "content/css",
+    cms: "content/cms",
+    category: "content/category",
+    // ... other filter options
+  },
+  specialCases: {
+    sponsors: {
+      folder: "content/sponsors",
+      filename: "index.md",
+    },
+    // ... other special cases
+  },
+  outputDir: "./.json",
+  publicOutputDir: "public/data",
+};
+
+// Function to ensure output directories exist
+const ensureOutputDirsExist = () => {
+  if (!fs.existsSync(config.outputDir)) {
+    fs.mkdirSync(config.outputDir, { recursive: true });
+  }
+  if (!fs.existsSync(config.publicOutputDir)) {
+    fs.mkdirSync(config.publicOutputDir, { recursive: true });
   }
 };
 
-// 获取列表页面数据
-const getListPageData = (folderPath, filename) => {
-  const fileData = fs.readFileSync(path.join(folderPath, filename), "utf-8");
-  const { data, content } = matter(fileData);
+// Function to get file data with frontmatter and content
+const getFileData = (folder, filename) => {
+  const fileContents = fs.readFileSync(path.join(folder, filename), "utf-8");
+  const { data, content } = matter(fileContents);
   const slug = filename.replace(".md", "");
+
   return {
     slug,
     frontmatter: data,
@@ -25,72 +53,96 @@ const getListPageData = (folderPath, filename) => {
   };
 };
 
-
-// 获取所有内容文件夹
-const getContentFolders = () => {
-  return fs.readdirSync(contentDir).filter((dir) => fs.statSync(path.join(contentDir, dir)).isDirectory());
+// Function to get list of pages with data for a given folder
+const getPagesData = (folder, includeDrafts = false) => {
+  const files = fs.readdirSync(folder);
+  const markdownFiles = files.filter(file => file.endsWith(".md") && (includeDrafts || !file.startsWith("_") && file !== "index.md"));
+  return markdownFiles.map(file => getFileData(folder, file));
 };
 
-// 获取单页数据
-const getSinglePageData = (folderPath, includeDrafts = false) => {
-  const files = fs.readdirSync(folderPath).filter((file) => file.endsWith(".md"));
-  return files.map((filename) => {
-    const fileData = fs.readFileSync(path.join(folderPath, filename), "utf-8");
-    const { data, content } = matter(fileData);
-    const slug = path.basename(filename, ".md");
-    return {
-      slug,
-      frontmatter: data,
-      content: content.trim(),
-    };
-  }).filter((page) => includeDrafts || !page.frontmatter.draft);
+// Function to write JSON data to a file
+const writeJsonToFile = (data, outputFilePath) => {
+  fs.writeFileSync(outputFilePath, JSON.stringify(data, null, 2));
 };
 
-// 写入JSON数据到文件
-const writeJsonData = (data, dir, filename) => {
-  ensureDir(dir); // Make sure the directory exists
-  const filePath = path.join(dir, `${filename}.json`);
-  
+// Function to process and output data for regular folders
+const processRegularFolders = () => {
+  Object.entries(config.regularFolders).forEach(([folderName, folderPath]) => {
+    const pagesData = getPagesData(folderPath);
+    const outputFilePath = path.join(config.outputDir, `${folderName}.json`);
+    const publicOutputFilePath = path.join(config.publicOutputDir, `${folderName}.json`);
+    writeJsonToFile(pagesData, outputFilePath);
+    writeJsonToFile(pagesData, publicOutputFilePath);
+  });
+};
+
+// Function to process and output data for filter options
+const processFilterOptions = () => {
+  Object.values(config.filterOptions).forEach(folderPath => {
+    const pagesData = getPagesData(folderPath, false); // Assuming filter options do not include drafts
+    const outputFilePath = path.join(config.outputDir, `${path.basename(folderPath)}.json`);
+    const publicOutputFilePath = path.join(config.publicOutputDir, `${path.basename(folderPath)}.json`);
+    writeJsonToFile(pagesData, outputFilePath);
+    writeJsonToFile(pagesData, publicOutputFilePath);
+  });
+};
+
+// Function to process special cases
+const processSpecialCases = () => {
+  Object.values(config.specialCases).forEach(({ folder, filename }) => {
+    const pageData = getFileData(folder, filename);
+    const outputFilePath = path.join(config.outputDir, `sponsors.json`);
+    const publicOutputFilePath = path.join(config.publicOutputDir, `sponsors.json`);
+    writeJsonToFile(pageData, outputFilePath);
+    writeJsonToFile(pageData, publicOutputFilePath);
+  });
+};
+
+// Custom data functions
+const getThemesName = () => {
+  const themesData = getPagesData(config.regularFolders.artifacts);
+  return themesData.map((item) => item.slug);
+};
+
+const getThemesGithub = () => {
+  const themesData = getPagesData(config.regularFolders.artifacts);
+  return themesData
+    .map((item) => item.frontmatter.github || "")
+    .filter((item) => item !== "");
+};
+
+const getCustomData = () => {
+  const authorsData = getPagesData(config.regularFolders.authors);
+  const customData = authorsData.map((item) => item.frontmatter.author);
+  const uniqueAuthors = Array.from(new Set(customData));
+  return uniqueAuthors;
+};
+
+// Main execution function
+const processAllData = async () => {
   try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    console.log(`JSON data has been written successfully to ${filePath}`);
+    ensureOutputDirsExist();
+    processRegularFolders();
+    processFilterOptions();
+    processSpecialCases();
+
+    // Custom JSON files for other data
+    const themesNameData = getThemesName();
+    const themesGithubData = getThemesGithub();
+    const customData = getCustomData();
+
+    const themesNameOutputPath = path.join(config.outputDir, "themes-name.json");
+    const themesGithubOutputPath = path.join(config.outputDir, "themes-github.json");
+    const customDataOutputPath = path.join(config.outputDir, "custom-data.json");
+
+    writeJsonToFile(themesNameData, themesNameOutputPath);
+    writeJsonToFile(themesGithubData, themesGithubOutputPath);
+    writeJsonToFile(customData, customDataOutputPath);
+
   } catch (err) {
-    console.error(`Failed to write JSON data to ${filePath}: ${err}`);
+    console.error("Error processing data:", err);
   }
 };
 
-// 主逻辑
-(async () => {
-  const folders = getContentFolders();
-  const dynamicData = {};
-
-  // 为每个文件夹获取数据
-  for (const folder of folders) {
-    const folderPath = path.join(contentDir, folder);
-    dynamicData[folder] = getSinglePageData(folderPath);
-  }
-
-  // 特别处理 sponsors
-  const sponsorsData = getListPageData(path.join(contentDir, "sponsors"), "index.md");
-  dynamicData.sponsors = [sponsorsData];
-  // 特别处理，创建theme-tools数组
-  const toolsFolders = ['ssg', 'css', 'cms', 'category'];
-  let themeTools = [];
-  for (const toolFolder of toolsFolders) {
-    if (dynamicData[toolFolder]) {
-      themeTools = [...themeTools, ...dynamicData[toolFolder]];
-    }
-  }
-
-  // 写入JSON数据
-  for (const [folder, data] of Object.entries(dynamicData)) {
-    writeJsonData(data, jsonDir, folder);
-    writeJsonData(data, publicDir, folder);
-  }
-
-  // 写入theme-tools
-  writeJsonData(themeTools, jsonDir, 'theme-tools');
-  writeJsonData(themeTools, publicDir, 'theme-tools');
-
-  console.log('JSON data has been written successfully.');
-})();
+// Start the data processing
+processAllData();
