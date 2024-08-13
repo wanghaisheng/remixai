@@ -48,9 +48,15 @@ const getSinglePageData = (folderPath, includeDrafts = false) => {
 
 // 写入JSON数据到文件
 const writeJsonData = (data, dir, filename) => {
-  ensureDir(dir);
+  ensureDir(dir); // Make sure the directory exists
   const filePath = path.join(dir, `${filename}.json`);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    console.log(`JSON data has been written successfully to ${filePath}`);
+  } catch (err) {
+    console.error(`Failed to write JSON data to ${filePath}: ${err}`);
+  }
 };
 
 // 主逻辑
