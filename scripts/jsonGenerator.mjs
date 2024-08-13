@@ -13,6 +13,19 @@ const ensureDir = (dir) => {
   }
 };
 
+// 获取列表页面数据
+const getListPageData = (folderPath, filename) => {
+  const fileData = fs.readFileSync(path.join(folderPath, filename), "utf-8");
+  const { data, content } = matter(fileData);
+  const slug = filename.replace(".md", "");
+  return {
+    slug,
+    frontmatter: data,
+    content: content.trim(),
+  };
+};
+
+
 // 获取所有内容文件夹
 const getContentFolders = () => {
   return fs.readdirSync(contentDir).filter((dir) => fs.statSync(path.join(contentDir, dir)).isDirectory());
