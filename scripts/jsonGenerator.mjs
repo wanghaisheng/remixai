@@ -140,6 +140,18 @@ const processAllData = async () => {
     console.error("Error processing data:", err);
   }
 };
-
+// Function to process and output themeTools data
+const processThemeTools = () => {
+  const themeToolsData = [];
+  config.filterOptions.themeTools.forEach((folderName) => {
+    const folderPath = config.filterOptions[folderName];
+    const pagesData = getPagesData(folderPath, false);
+    themeToolsData.push(...pagesData);
+  });
+  const outputFilePath = path.join(config.outputDir, `theme-tools.json`);
+  const publicOutputFilePath = path.join(config.publicOutputDir, `theme-tools.json`);
+  writeJsonToFile(themeToolsData, outputFilePath);
+  writeJsonToFile(themeToolsData, publicOutputFilePath);
+};
 // Start the data processing
 processAllData();
