@@ -5,26 +5,26 @@ import path from "path";
 // Configuration for folder paths and output directories
 const config = {
   regularFolders: {
-
-    artifacts: "content/artifacts",
+    // Define your regular folders here, e.g., "blog": "content/blog"
+artifacts: "content/artifacts",
     kol: "content/kol",
     videos: "content/videos",
     authors: "content/authors",
-    blog: "content/blog",
-    // ... other regular folders  },
+    blog: "content/blog",    
+  },
   filterOptions: {
     ssg: "content/ssg",
     css: "content/css",
     cms: "content/cms",
     category: "content/category",
-    // ... other filter options
+    // Define other filter options here
   },
   specialCases: {
     sponsors: {
       folder: "content/sponsors",
       filename: "index.md",
     },
-    // ... other special cases
+    // Define other special cases here
   },
   outputDir: "./.json",
   publicOutputDir: "public/data",
@@ -41,10 +41,11 @@ const ensureOutputDirsExist = () => {
 };
 
 // Function to get file data with frontmatter and content
-const getFileData = (folder, filename) => {
-  const fileContents = fs.readFileSync(path.join(folder, filename), "utf-8");
+const getFileData = (folderPath, filename) => {
+  const fullPath = path.join(folderPath, filename);
+  const fileContents = fs.readFileSync(fullPath, "utf-8");
   const { data, content } = matter(fileContents);
-  const slug = filename.replace(".md", "");
+  const slug = filename.replace(/\.md$/, ""); // Remove the .md extension
 
   return {
     slug,
@@ -54,10 +55,10 @@ const getFileData = (folder, filename) => {
 };
 
 // Function to get list of pages with data for a given folder
-const getPagesData = (folder, includeDrafts = false) => {
-  const files = fs.readdirSync(folder);
-  const markdownFiles = files.filter(file => file.endsWith(".md") && (includeDrafts || !file.startsWith("_") && file !== "index.md"));
-  return markdownFiles.map(file => getFileData(folder, file));
+const getPagesData = (folderPath, includeDrafts = false) => {
+  const files = fs.readdirSync(folderPath);
+  const markdownFiles = files.filter(file => file.endsWith(".md") && (includeDrafts || file !== "index.md"));
+  return markdownFiles.map(file => getFileData(folderPath, file));
 };
 
 // Function to write JSON data to a file
@@ -79,9 +80,10 @@ const processRegularFolders = () => {
 // Function to process and output data for filter options
 const processFilterOptions = () => {
   Object.values(config.filterOptions).forEach(folderPath => {
-    const pagesData = getPagesData(folderPath, false); // Assuming filter options do not include drafts
-    const outputFilePath = path.join(config.outputDir, `${path.basename(folderPath)}.json`);
-    const publicOutputFilePath = path.join(config.publicOutputDir, `${path.basename(folderPath)}.json`);
+    const pagesData = getPagesData(folderPath, false); // Filter options do not include drafts
+    const outputBaseName = path.basename(folderPath).replace(/\//g, '_'); // Replace folder path slashes with underscores
+    const outputFilePath = path.join(config.outputDir, `${outputBaseName}.json`);
+    const publicOutputFilePath = path.join(config.publicOutputDir, `${outputBaseName}.json`);
     writeJsonToFile(pagesData, outputFilePath);
     writeJsonToFile(pagesData, publicOutputFilePath);
   });
@@ -100,22 +102,21 @@ const processSpecialCases = () => {
 
 // Custom data functions
 const getThemesName = () => {
-  const themesData = getPagesData(config.regularFolders.artifacts);
-  return themesData.map((item) => item.slug);
+  const themesData = getPagesData(config.regularFolders.artifacts || "content/artifacts");
+  return themesData.map(item => item.slug);
 };
 
 const getThemesGithub = () => {
-  const themesData = getPagesData(config.regularFolders.artifacts);
+  const themesData = getPagesData(config.regularFolders.artifacts || "content/artifacts");
   return themesData
-    .map((item) => item.frontmatter.github || "")
-    .filter((item) => item !== "");
+    .map(item => item.frontmatter.github || "")
+    .filter(item => item !== "");
 };
 
 const getCustomData = () => {
-  const authorsData = getPagesData(config.regularFolders.authors);
-  const customData = authorsData.map((item) => item.frontmatter.author);
-  const uniqueAuthors = Array.from(new Set(customData));
-  return uniqueAuthors;
+  const authorsData = getPagesData(config.regularFolders.authors || "content/authors");
+  const authors = authorsData.map(item => item.frontmatter.author);
+  return Array.from(new Set(authors)); // Get unique authors
 };
 
 // Main execution function
@@ -126,18 +127,14 @@ const processAllData = async () => {
     processFilterOptions();
     processSpecialCases();
 
-    // Custom JSON files for other data
-    const themesNameData = getThemesName();
-    const themesGithubData = getThemesGithub();
-    const customData = getCustomData();
-
+    // Write custom data to JSON files
     const themesNameOutputPath = path.join(config.outputDir, "themes-name.json");
     const themesGithubOutputPath = path.join(config.outputDir, "themes-github.json");
     const customDataOutputPath = path.join(config.outputDir, "custom-data.json");
 
-    writeJsonToFile(themesNameData, themesNameOutputPath);
-    writeJsonToFile(themesGithubData, themesGithubOutputPath);
-    writeJsonToFile(customData, customDataOutputPath);
+    writeJsonToFile(getThemesName(), themesNameOutputPath);
+    writeJsonToFile(getThemesGithub(), themesGithubOutputPath);
+    writeJsonToFile(getCustomData(), customDataOutputPath);
 
   } catch (err) {
     console.error("Error processing data:", err);
