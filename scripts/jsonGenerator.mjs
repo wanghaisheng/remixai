@@ -1,130 +1,101 @@
-import fs from 'fs';
-import matter from 'gray-matter';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import matter from "gray-matter";
+import path from "path";
+const jsonDir = "./.json";
 
-// Resolve directory of the current module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Configuration
-const CONFIG_PATH = path.join(__dirname, 'config.json');
-const JSON_DIR = path.join(__dirname, '..', 'data');
-const PUBLIC_DIR = path.join('public', 'data');
-
-// Load configuration
-const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
-
-// Extract folder paths from configuration
-const { folders } = config;
-const FOLDERS = {
-  ...folders,
-  filters: folders.filters,
-};
-
-// Ensure the JSON directory exists
-const ensureJsonDir = () => {
-  if (!fs.existsSync(JSON_DIR)) {
-    fs.mkdirSync(JSON_DIR);
-  }
-};
-
-// Write data to a JSON file
-const writeJsonFile = (filename, data) => {
-  fs.writeFileSync(path.join(JSON_DIR, filename), JSON.stringify(data, null, 2));
-};
-
-// Get list page data
+// get list page data (ex: about.md)
 const getListPageData = (folder, filename) => {
-  const slug = filename.replace('.md', '');
-  const fileData = fs.readFileSync(path.join(folder, filename), 'utf-8');
+  const slug = filename.replace(".md", "");
+  const fileData = fs.readFileSync(path.join(folder, filename), "utf-8");
   const { data } = matter(fileData);
   const content = matter(fileData).content;
 
   return {
-    slug,
+    slug: slug,
     frontmatter: data,
-    content,
+    // content: content,
   };
 };
 
-// Get single page data
+// get single page data (ex: blog/*.md)
 const getSinglePageData = (folder, includeDrafts) => {
-  const getPath = fs.readdirSync(folder);
-  const sanitizeData = getPath.filter((item) => item.endsWith('.md'));
-  const filterData = sanitizeData.filter((item) => !item.startsWith('_'));
+  const getPath = fs.readdirSync(path.join(folder));
+  const sanitizeData = getPath.filter((item) => item.includes(".md"));
+  const filterData = sanitizeData.filter((item) => item.match(/^(?!_)/));
   const allPages = filterData.map((filename) =>
     getListPageData(folder, filename),
   );
-  return includeDrafts ? allPages : allPages.filter((page) => !page.frontmatter?.draft);
+  const publishedPages = allPages.filter(
+    (page) => !page.frontmatter?.draft && page,
+  );
+  return includeDrafts ? allPages : publishedPages;
 };
 
-// Get custom data functions
-const getThemesName = (folder) => {
-  const getAllData = getSinglePageData(folder, false);
+// get themes name
+const getThemesName = () => {
+  const getAllData = getSinglePageData("content/artifacts", false);
   return getAllData.map((item) => item.slug);
 };
 
-const getThemesGithub = (folder) => {
-  const getAllData = getSinglePageData(folder, false);
+// get custom data
+const getThemesGithub = () => {
+  const getAllData = getSinglePageData("content/artifacts", false);
   return getAllData
-    .map((item) => item.frontmatter.github || '')
-    .filter((item) => item !== '');
+    .map((item) => (item.frontmatter.github ? item.frontmatter.github : ""))
+    .filter((item) => item !== "");
 };
 
-const getCustomData = (folder) => {
-  const getAllData = getSinglePageData(folder, false);
+// get custom data
+const getCustomData = () => {
+  const getAllData = getSinglePageData("content/artifacts", false);
   const customData = getAllData.map((item) => item.frontmatter.author);
-  return [...new Set(customData)];
+  // unique authors
+  const uniqueAuthors = [...new Set(customData)];
+  return uniqueAuthors;
 };
 
-// Main logic
-const dynamicFolders = {
-  themes: getSinglePageData(FOLDERS.artifacts, false),
-  tools: getSinglePageData(FOLDERS.kol, false),
-  examples: getSinglePageData(FOLDERS.videos, false),
-  authors: getSinglePageData(FOLDERS.authors, false),
-  blog: getSinglePageData(FOLDERS.blog, false),
-  sponsors: getListPageData(FOLDERS.sponsors, 'index.md'),
-};
+// get all data
+const themes = getSinglePageData("content/artifacts", false);
+const tools = getSinglePageData("content/kol", false);
+const examples = getSinglePageData("content/videos", false);
+const authors = getSinglePageData("content/authors", false);
+const blog = getSinglePageData("content/blog", false);
+const ssg = getSinglePageData("content/ssg", true);
+const css = getSinglePageData("content/css", true);
+const cms = getSinglePageData("content/cms", true);
+const category = getSinglePageData("content/category", true);
+const sponsors = getListPageData("content/sponsors", "index.md");
+const themeTools = [...ssg, ...css, ...cms, ...category];
 
-const dynamicFilters = {
-  ssg: getSinglePageData(FOLDERS.filters.ssg, true),
-  css: getSinglePageData(FOLDERS.filters.css, true),
-  cms: getSinglePageData(FOLDERS.filters.cms, true),
-  category: getSinglePageData(FOLDERS.filters.category, true),
-};
-
-// Combine filter folders into a single array
-const themeTools = [
-  ...dynamicFilters.ssg,
-  ...dynamicFilters.css,
-  ...dynamicFilters.cms,
-  ...dynamicFilters.category,
-];
-
-// Write JSON files based on dynamic folder names
-const writeDataFiles = () => {
-  try {
-    ensureJsonDir();
-
-    Object.keys(dynamicFolders).forEach((key) => {
-      writeJsonFile(`${key}.json`, dynamicFolders[key]);
-    });
-
-    writeJsonFile('theme-tools.json', themeTools);
-    writeJsonFile('themes-name.json', getThemesName(FOLDERS.artifacts));
-    writeJsonFile('themes-github.json', getThemesGithub(FOLDERS.artifacts));
-    writeJsonFile('custom-data.json', getCustomData(FOLDERS.artifacts));
-
-    // Also write public data
-    Object.keys(dynamicFolders).forEach((key) => {
-      fs.writeFileSync(path.join(PUBLIC_DIR, `${key}.json`), JSON.stringify(dynamicFolders[key], null, 2));
-    });
-    fs.writeFileSync(path.join(PUBLIC_DIR, 'theme-tools.json'), JSON.stringify(themeTools, null, 2));
-  } catch (err) {
-    console.error(err);
+try {
+  if (!fs.existsSync(jsonDir)) {
+    fs.mkdirSync(jsonDir);
   }
-};
+  // json data
+  fs.writeFileSync(`${jsonDir}/artifacts.json`, JSON.stringify(themes));
+  fs.writeFileSync(`${jsonDir}/kol.json`, JSON.stringify(tools));
+  fs.writeFileSync(`${jsonDir}/videos.json`, JSON.stringify(examples));
+  fs.writeFileSync(`${jsonDir}/authors.json`, JSON.stringify(authors));
+  fs.writeFileSync(`${jsonDir}/theme-tools.json`, JSON.stringify(themeTools));
+  fs.writeFileSync(`${jsonDir}/blog.json`, JSON.stringify(blog));
+  fs.writeFileSync(`${jsonDir}/sponsors.json`, JSON.stringify(sponsors));
+  fs.writeFileSync(
+    `${jsonDir}/themes-name.json`,
+    JSON.stringify(getThemesName()),
+  );
+  fs.writeFileSync(
+    `${jsonDir}/themes-github.json`,
+    JSON.stringify(getThemesGithub()),
+  );
+  fs.writeFileSync(
+    `${jsonDir}/custom-data.json`,
+    JSON.stringify(getCustomData()),
+  );
 
-writeDataFiles();
+  // public data
+  fs.writeFileSync(`public/data/artifacts.json`, JSON.stringify(themes));
+  fs.writeFileSync(`public/data/kol.json`, JSON.stringify(tools));
+  fs.writeFileSync(`public/data/videos.json`, JSON.stringify(examples));
+} catch (err) {
+  console.error(err);
+}
