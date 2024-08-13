@@ -1,0 +1,16 @@
+{
+  "folders": {
+    "artifacts": "content/artifacts",
+    "kol": "content/kol",
+    "videos": "content/videos",
+    "authors": "content/authors",
+    "blog": "content/blog",
+    "filters": {
+      "ssg": "content/ssg",
+      "css": "content/css",
+      "cms": "content/cms",
+      "category": "content/category"
+    },
+    "sponsors": "content/sponsors"
+  }
+}
