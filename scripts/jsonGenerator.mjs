@@ -1,6 +1,11 @@
 import fs from 'fs';
 import matter from 'gray-matter';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Resolve directory of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configuration
 const CONFIG_PATH = path.join(__dirname, 'config.json');
