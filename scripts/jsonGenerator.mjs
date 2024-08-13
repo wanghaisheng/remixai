@@ -6,14 +6,14 @@ const contentDir = "./content";
 const jsonDir = "./.json";
 const publicDir = "./public/data";
 
-// 确保目录存在
+// Ensure directory exists
 const ensureDir = (dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 };
 
-// 获取列表页面数据
+// Get list page data
 const getListPageData = (folderPath, filename) => {
   const fileData = fs.readFileSync(path.join(folderPath, filename), "utf-8");
   const { data, content } = matter(fileData);
@@ -25,54 +25,49 @@ const getListPageData = (folderPath, filename) => {
   };
 };
 
-// 获取单页数据
+// Get single page data
 const getSinglePageData = (folderPath, includeDrafts = false) => {
   const files = fs.readdirSync(folderPath).filter((file) => file.endsWith(".md"));
   return files.map((filename) => getListPageData(folderPath, filename))
-    .filter((page) => includeDrafts || !page.frontmatter.draft);
+    .filter((page) => includeDrafts || !page.frontmatter?.draft);
 };
 
-// 写入JSON数据到文件
+// Get content folders
+const getContentFolders = (dir = contentDir) => {
+  return fs.readdirSync(dir).filter((name) => fs.statSync(path.join(dir, name)).isDirectory());
+};
+
+// Write JSON data to files
 const writeJsonData = (data, dir, filename) => {
   ensureDir(dir);
   const filePath = path.join(dir, `${filename}.json`);
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 };
 
-// 主逻辑
+// Main logic
 (async () => {
-  // 获取所有内容文件夹
-  const folders = getContentFolders();
+  // Get all content folders within the content directory
+  const contentFolders = getContentFolders();
   const dynamicData = {};
 
-  // 为每个文件夹获取数据
-  for (const folder of folders) {
+  // Process each folder
+  for (const folder of contentFolders) {
     const folderPath = path.join(contentDir, folder);
     dynamicData[folder] = getSinglePageData(folderPath);
   }
 
-  // 特别处理 sponsors
+  // Sponsors data
   const sponsorsData = getListPageData(path.join(contentDir, "sponsors"), "index.md");
-  dynamicData.sponsors = [sponsorsData];
+  dynamicData.sponsors = sponsorsData;
 
-  // 特别处理，创建theme-tools数组
-  const toolsFolders = ['ssg', 'css', 'cms', 'category'];
-  let themeTools = [];
-  for (const toolFolder of toolsFolders) {
-    if (dynamicData[toolFolder]) {
-      themeTools = [...themeTools, ...dynamicData[toolFolder]];
-    }
+  // Concatenate theme tools
+  const themeTools = [...(dynamicData.ssg || []), ...(dynamicData.css || []), ...(dynamicData.cms || []), ...(dynamicData.category || [])];
+
+  // Write JSON files
+  for (const [key, value] of Object.entries(dynamicData)) {
+    writeJsonData(value, jsonDir, key);
+    writeJsonData(value, publicDir, key);
   }
-
-  // 写入JSON数据
-  for (const [folder, data] of Object.entries(dynamicData)) {
-    writeJsonData(data, jsonDir, folder);
-    writeJsonData(data, publicDir, folder);
-  }
-
-  // 写入theme-tools
-  writeJsonData(themeTools, jsonDir, 'theme-tools');
-  writeJsonData(themeTools, publicDir, 'theme-tools');
 
   console.log('JSON data has been written successfully.');
 })();
